@@ -1,0 +1,81 @@
+# https://taskfile.dev
+
+version: '3'
+
+env:
+  DATABASE_USER: postgres
+  DATABASE_PASSWORD: postgres
+  DATABASE_HOST: localhost
+  DATABASE_NAME: postgres
+  GOPATH:
+    sh: go env GOPATH
+  TZ: UTC
+  PARALLEL: 4
+
+tasks:
+  install:
+    deps:
+      - migrate:install
+      - lint:install
+      - test:install
+
+  migrate:install:
+    status:
+      - test -f $GOPATH/bin/tern
+    cmds:
+      - go install github.com/jackc/tern@latest
+  migrate:up:
+    deps:
+      - migrate:install
+    desc: Run all up migrations.
+    cmds:
+      - tern migrate -m migrations -c migrations/tern.conf
+  migrate:down:
+    deps:
+      - migrate:install
+    desc: Run all down migrations.
+    cmds:
+      - tern migrate -d 0 -m migrations -c migrations/tern.conf
+  migrate:fresh:
+    deps:
+      - migrate:install
+    desc: Run all migrations from the ground.
+    cmds:
+      - task: migrate:down
+      - task: migrate:up
+  migrate:new:
+    deps:
+      - migrate:install
+    cmds:
+      - tern new {{.CLI_ARGS}} -m migrations
+
+  run:
+    deps:
+      - install
+      - migrate:up
+    cmds:
+      - go run main.go
+
+  lint:install:
+    status:
+      - test -f $GOPATH/bin/golangci-lint
+    cmds:
+      - go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+  lint:
+    deps:
+      - lint:install
+    cmds:
+      - golangci-lint run
+
+  test:install:
+    status:
+      - go version
+      - test -f $GOPATH/bin/gotestsum
+    cmds:
+      - go install gotest.tools/gotestsum@latest
+  test:
+    deps:
+      - test:install
+      - migrate:fresh
+    cmds:
+      - gotestsum --junitfile=unit-tests.xml -- -timeout 30s -race -parallel $PARALLEL -count=1 ./...

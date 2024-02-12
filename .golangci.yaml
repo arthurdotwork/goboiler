@@ -1,0 +1,53 @@
+linters:
+  presets:
+    - bugs
+    - error
+    - format
+    - import
+    - module
+    - performance
+    - sql
+    - test
+    - unused
+
+  enable:
+    - misspell
+
+  disable:
+    - depguard # forces to manually allow each import
+    - exhaustive # forces to switch on all enum values
+    - exhaustruct # forces to initialize all struct fields
+    - goerr113 # broken
+    - tparallel # forces to use parallel tests which is not always possible
+    - contextcheck # forces to pass context when it is not always necessary
+
+issues:
+  exclude-rules:
+    - path: (.+)_test.go
+      linters:
+        - wrapcheck
+
+linters-settings:
+  paralleltest:
+    ignore-missing-subtests: true
+
+  wrapcheck:
+    ignoreSigs:
+      # default (see: https://github.com/tomarrell/wrapcheck/blob/master/wrapcheck/wrapcheck.go)
+      - .Errorf(
+      - errors.New(
+      - errors.Unwrap(
+      - errors.Join(
+      - .Wrap(
+      - .Wrapf(
+      - .WithMessage(
+      - .WithMessagef(
+      - .WithStack(
+
+      # custom
+      - xerror.Error(
+      - xerror.WrapError(
+
+run:
+  concurrency: 2
+  timeout: 2m
