@@ -1,8 +1,8 @@
-<center>
+<p align="center">
 <img src="https://github.com/MariaLetta/free-gophers-pack/blob/master/characters/png/47.png?raw=true" width="300px">
+</p>
 
-# Goboiler
-</center>
+<h1 align="center">Goboiler</h1>
 
 Goboiler is my personal golang boilerplate for services & APIs.
 It uses the following packages:
@@ -74,4 +74,9 @@ task migrate:fresh # to revert the database and run all the migrations
 ### Create a new migration
 ```sh
 task migrate:new -- {{migration_name}} # ex: create_users_table
+```
+
+### Build the docker image
+```sh
+task docker:package
 ```
