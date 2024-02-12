@@ -11,8 +11,10 @@ import (
 	"time"
 
 	"github.com/arthureichelberger/goboiler/internal/handler"
+	"github.com/arthureichelberger/goboiler/internal/middleware"
 	"github.com/arthureichelberger/goboiler/internal/service"
 	"github.com/arthureichelberger/goboiler/internal/store"
+	"github.com/arthureichelberger/goboiler/pkg/prom"
 	"github.com/arthureichelberger/goboiler/pkg/psql"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
@@ -58,7 +60,7 @@ func run(ctx context.Context) error {
 	dummyService := service.NewDummyService(dummyStore)
 
 	router := gin.New()
-
+	router.Use(middleware.InstrumentedMiddleware())
 	router.GET("/ping", handler.PingHandler())
 	router.GET("/dummy", handler.DummyHandler(dummyService))
 
@@ -82,6 +84,14 @@ func run(ctx context.Context) error {
 		log.Debug().Msg("shutting down application")
 		if err := httpServer.Shutdown(ctx); err != nil {
 			return fmt.Errorf("failed to shutdown http server: %w", err)
+		}
+
+		return nil
+	})
+
+	errGroup.Go(func() error {
+		if err := prom.Handler(ctx); err != nil {
+			return fmt.Errorf("failed to run prometheus handler: %w", err)
 		}
 
 		return nil
