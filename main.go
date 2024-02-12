@@ -88,7 +88,7 @@ func run(ctx context.Context) error {
 	})
 
 	if err := errGroup.Wait(); err != nil {
-		return fmt.Errorf("failed to run application")
+		return fmt.Errorf("failed to run application: %w", err)
 	}
 
 	log.Debug().Msg("application is shutting down")
