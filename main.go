@@ -40,11 +40,11 @@ func run(ctx context.Context) error {
 	// packages
 	db, err := psql.Connect(
 		ctx,
-		env("DB_USERNAME", "postgres"),
-		env("DB_PASSWORD", "postgres"),
-		env("DB_HOST", "localhost"),
-		env("DB_PORT", "5432"),
-		env("DB_NAME", "postgres"),
+		env("DATABASE_USERNAME", "postgres"),
+		env("DATABASE_PASSWORD", "postgres"),
+		env("DATABASE_HOST", "localhost"),
+		env("DATABASE_PORT", "5432"),
+		env("DATABASE_NAME", "postgres"),
 	)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to connect to database")

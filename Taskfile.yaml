@@ -11,6 +11,7 @@ env:
     sh: go env GOPATH
   TZ: UTC
   PARALLEL: 4
+  IMAGE: goboiler:local
 
 tasks:
   install:
@@ -79,3 +80,7 @@ tasks:
       - migrate:fresh
     cmds:
       - gotestsum --junitfile=unit-tests.xml -- -timeout 30s -race -parallel $PARALLEL -count=1 ./...
+
+  docker:package:
+    cmds:
+      - docker build -t {{.IMAGE}} .
