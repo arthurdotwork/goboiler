@@ -11,6 +11,7 @@ It uses the following packages:
 - [zerolog](https://github.com/rs/zerolog) for logging.
 - [tern](https://github.com/jackc/tern) for database migrations.
 - [task](https://taskfile.dev) as a makefile replacement.
+- [prometheus](https://github.com/prometheus/client_golang) for metrics.
 
 ## Getting started
 
