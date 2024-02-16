@@ -34,11 +34,15 @@ func main() {
 	}()
 
 	if err := run(ctx); err != nil {
+		log.Error().Err(err).Msg("failed to run application")
 		os.Exit(1)
 	}
 }
 
-func run(ctx context.Context) error {
+func run(parent context.Context) error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	// packages
 	db, err := psql.Connect(
 		ctx,
@@ -61,7 +65,8 @@ func run(ctx context.Context) error {
 
 	router := gin.New()
 	router.Use(middleware.InstrumentedMiddleware())
-	router.GET("/ping", handler.PingHandler())
+	router.GET("/livez", handler.LivenessProbeHandler())
+	router.GET("/readyz", handler.ReadinessProbeHandler(parent))
 	router.GET("/dummy", handler.DummyHandler(dummyService))
 
 	httpServer := &http.Server{
@@ -80,9 +85,13 @@ func run(ctx context.Context) error {
 	})
 
 	errGroup.Go(func() error {
-		<-ctx.Done()
+		<-parent.Done()
 		log.Debug().Msg("shutting down application")
-		if err := httpServer.Shutdown(ctx); err != nil {
+
+		time.Sleep(time.Second * 5)
+		cancel()
+
+		if err := httpServer.Shutdown(context.WithoutCancel(ctx)); err != nil {
 			return fmt.Errorf("failed to shutdown http server: %w", err)
 		}
 

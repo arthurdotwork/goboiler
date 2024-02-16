@@ -6,6 +6,7 @@
 
 Goboiler is my personal golang boilerplate for services & APIs.
 It uses the following packages:
+
 - [sqlx](https://github.com/jackc/sqlx) and [sqalx](https://github.com/heetch/sqalx) for database access.
 - [gin](https://github.com/gin-gonic/gin) for the http router.
 - [zerolog](https://github.com/rs/zerolog) for logging.
@@ -24,26 +25,31 @@ It uses the following packages:
 ### Installation
 
 1. Clone the repository
+
 ```sh
 git clone github.com/arthureichelberger/goboiler
 ```
 
 2. Install dependencies
+
 ```sh
 task install
 ```
 
 3. Start the associated services
+
 ```sh
 docker-compose up -d
 ```
 
 4. Run the migrations
+
 ```sh
 task migrate:fresh
 ```
 
 5. Run the server
+
 ```sh
 task run
 ```
@@ -51,21 +57,25 @@ task run
 ## Usage
 
 ### Run the server
+
 ```sh
 task run
 ```
 
 ### Run the tests
+
 ```sh
 task test # also resets the database
 ```
 
 ### Run the linter
+
 ```sh
 task lint
 ```
 
 ### Run the migrations
+
 ```sh
 task migrate:up # to run the next migrations
 task migrate:down # to revert the database
@@ -73,11 +83,18 @@ task migrate:fresh # to revert the database and run all the migrations
 ```
 
 ### Create a new migration
+
 ```sh
 task migrate:new -- {{migration_name}} # ex: create_users_table
 ```
 
 ### Build the docker image
+
 ```sh
 task docker:package
 ```
+
+## Intended usage
+
+This boilerplate is mainly designed for deployment in Kubernetes with a PostgreSQL database. Therefore, certain
+technical decisions were made, particularly regarding [liveness and readiness probes](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/).

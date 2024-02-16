@@ -6,11 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func PingHandler() gin.HandlerFunc {
+func LivenessProbeHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		ctx := c.Request.Context()
-		_ = ctx
-
 		c.JSON(http.StatusOK, gin.H{})
 	}
 }
