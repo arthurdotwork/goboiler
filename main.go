@@ -34,7 +34,7 @@ func main() {
 	}()
 
 	if err := run(ctx); err != nil {
-		log.Fatal().Err(err)
+		log.Fatal().Err(err).Msg("application shutdown with an error")
 	}
 }
 
