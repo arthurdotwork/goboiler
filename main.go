@@ -65,7 +65,7 @@ func run(parent context.Context) error {
 
 	router := gin.New()
 	router.Use(middleware.InstrumentedMiddleware())
-	router.GET("/probes/liveness", handler.LivenessProbeHandler(db))
+	router.GET("/probes/liveness", handler.LivenessProbeHandler())
 	router.GET("/probes/readiness", handler.ReadinessProbeHandler(parent))
 	router.GET("/dummy", handler.DummyHandler(dummyService))
 
