@@ -34,6 +34,7 @@ func main() {
 	}()
 
 	if err := run(ctx); err != nil {
+		log.Error().Err(err).Msg("failed to run application")
 		os.Exit(1)
 	}
 }
@@ -86,9 +87,11 @@ func run(parent context.Context) error {
 	errGroup.Go(func() error {
 		<-parent.Done()
 		log.Debug().Msg("shutting down application")
+
 		time.Sleep(time.Second * 5)
 		cancel()
-		if err := httpServer.Shutdown(ctx); err != nil {
+
+		if err := httpServer.Shutdown(context.WithoutCancel(ctx)); err != nil {
 			return fmt.Errorf("failed to shutdown http server: %w", err)
 		}
 
