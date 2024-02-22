@@ -19,6 +19,8 @@ tasks:
       - migrate:install
       - lint:install
       - test:install
+    cmds:
+      - task: setup
 
   migrate:install:
     status:
@@ -84,3 +86,7 @@ tasks:
   docker:package:
     cmds:
       - docker build -t {{.IMAGE}} .
+
+  setup:
+    cmds:
+      - ./setup.sh
