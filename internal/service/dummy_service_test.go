@@ -24,7 +24,7 @@ func TestDummy(t *testing.T) {
 	t.Cleanup(rollback)
 
 	dummyStore := store.NewDummyStore(txn)
-	dummyService := service.NewDummyService(dummyStore)
+	dummyService := service.NewDummyService(dummyStore, psql.NewTransactor(txn(ctx)))
 
 	t.Run("it should return the correct value", func(t *testing.T) {
 		count, err := dummyService.Dummy(ctx)
