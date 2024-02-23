@@ -16,6 +16,7 @@ import (
 	"github.com/arthureichelberger/goboiler/internal/store"
 	"github.com/arthureichelberger/goboiler/pkg/prom"
 	"github.com/arthureichelberger/goboiler/pkg/psql"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/sync/errgroup"
@@ -64,6 +65,11 @@ func run(parent context.Context) error {
 	dummyService := service.NewDummyService(dummyStore)
 
 	router := gin.New()
+	router.Use(cors.New(cors.Config{
+		AllowAllOrigins: true,
+		AllowMethods:    []string{"*"},
+		AllowHeaders:    []string{"*"},
+	}))
 	router.Use(middleware.InstrumentedMiddleware())
 	router.GET("/livez", handler.LivenessProbeHandler())
 	router.GET("/readyz", handler.ReadinessProbeHandler(parent))
