@@ -12,10 +12,10 @@ type DummyStore interface {
 }
 
 type dummyStore struct {
-	db psql.Queryable
+	db psql.DBGetter
 }
 
-func NewDummyStore(db psql.Queryable) DummyStore {
+func NewDummyStore(db psql.DBGetter) DummyStore {
 	return dummyStore{
 		db: db,
 	}
@@ -25,7 +25,7 @@ func (s dummyStore) Dummy(ctx context.Context) (int64, error) {
 	query := `SELECT 1+1 as result`
 
 	var count int64
-	if err := s.db.GetContext(ctx, &count, query); err != nil {
+	if err := s.db(ctx).GetContext(ctx, &count, query); err != nil {
 		return 0, fmt.Errorf("failed to dummy: %w", err)
 	}
 

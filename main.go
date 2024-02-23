@@ -58,11 +58,13 @@ func run(parent context.Context) error {
 		return fmt.Errorf("failed to connect to database: %w", err)
 	}
 
+	transactor := psql.NewTransactor(db(ctx))
+
 	// stores
 	dummyStore := store.NewDummyStore(db)
 
 	// services
-	dummyService := service.NewDummyService(dummyStore)
+	dummyService := service.NewDummyService(dummyStore, transactor)
 
 	router := gin.New()
 	router.Use(cors.New(cors.Config{

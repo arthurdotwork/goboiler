@@ -8,15 +8,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func Txn(t *testing.T, ctx context.Context, db psql.Queryable) (psql.Queryable, func()) {
+func Txn(t *testing.T, ctx context.Context, db psql.DBGetter) (psql.DBGetter, func()) {
 	t.Helper()
 
-	txn, err := db.BeginTxx(ctx, nil)
+	txn, err := db(ctx).BeginTxx(ctx, nil)
 	require.NoError(t, err)
 
-	rollback := func() {
-		_ = txn.Rollback() // nolint:errcheck
-	}
+	txQueryable := &psql.TxQueryable{Queryable: txn}
 
-	return txn, rollback
+	return func(ctx context.Context) psql.Queryable {
+			if subTxn := psql.TxFromContext(ctx); subTxn != nil {
+				return subTxn
+			}
+
+			return txQueryable
+		}, func() {
+			// nolint:errcheck
+			txn.Rollback()
+		}
 }
